@@ -1,3 +1,4 @@
+// 年级对比 第一周周
 <template>
   <div class="classes">
     <div class="panel">
@@ -67,65 +68,83 @@
 
 <script>
 export default {
-  name: 'Home',
-  data () {
+  data() {
     return {
-      titleImg: require('@/assets/culture_title.png'),
-      spaceShipImg: require('@/assets/culture_vicepic.png'),
-      folderImg: require('@/assets/culture_month.png'),
-      no1Img: require('@/assets/culture_rank_first.png'),
-      no2Img: require('@/assets/culture_rank_second.png'),
-      no3Img: require('@/assets/culture_rank_third.png'),
-      mark1Img: require('@/assets/culture_grade_first.png'),
-      mark2Img: require('@/assets/culture_grade_second.png'),
-      mark3Img: require('@/assets/culture_grade_third.png'),
-      title: '一年级 第七周',
+      titleImg: require("@/assets/culture_title.png"),
+      spaceShipImg: require("@/assets/culture_vicepic.png"),
+      folderImg: require("@/assets/culture_month.png"),
+      no1Img: require("@/assets/culture_rank_first.png"),
+      no2Img: require("@/assets/culture_rank_second.png"),
+      no3Img: require("@/assets/culture_rank_third.png"),
+      mark1Img: require("@/assets/culture_grade_first.png"),
+      mark2Img: require("@/assets/culture_grade_second.png"),
+      mark3Img: require("@/assets/culture_grade_third.png"),
+      title: "一年级 第七周",
       no1: {
         mark: 101,
-        class: '101班',
-        headTeacher: '陈大文'
+        class: "101班",
+        headTeacher: "陈大文"
       },
       no2: {
         mark: 106,
-        class: '102班',
-        headTeacher: '陈大文'
+        class: "102班",
+        headTeacher: "陈大文"
       },
       no3: {
         mark: 105,
-        class: '103班',
-        headTeacher: '陈大文'
+        class: "103班",
+        headTeacher: "陈大文"
       },
       rankings: [
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 }
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 }
       ],
       footer: {
-        name: '桌成实验小学',
-        qrcode: require('@/assets/1.jpg'),
-        motto: '悦评越好·让成长更可见'
-      }
-    }
+        name: "桌成实验小学",
+        qrcode: require("@/assets/1.jpg"),
+        motto: "悦评越好·让成长更可见"
+      },
+      id: [],
+      ids: [],
+      cheList: []
+    };
   },
-  created () {
-
+  created() {
+    this.postOP();
+    this.poosTOP();
   },
-  mounted () {
-  },
-  beforeDestroy () {
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
+    async postOP() {
+      const rs = await this.$http.post(
+        `/openschool/schoolscreennew/queryScreenThemeList?schoolCode=${"98BD49108033A204"}`
+      );
+
+      let ar = rs.data.data;
+
+      let arror = ar.filter(item => item.screenSourceType.typeId === 211)[0];
+
+      this.id = arror.id;
+    },
+    async poosTOP() {
+      const rty = await this.$http.post(
+        `/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${165}`
+      );
+
+      console.log(rty, "rttttttttt");
+    }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

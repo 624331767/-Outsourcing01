@@ -17,23 +17,23 @@
         :src="fireworkImg"
       />
 
-      <div class="left">
+      <div class="left" v-for="(item, index) in PSuList.items" :key="index">
         <img class="bg-img" :src="honorBgImg" />
-        <img class="avatar" :src="student.avatar" />
+        <img class="avatar" :src="item.stuHeadPic" />
         <img class="front-img" :src="honorFrontImg" />
-        <span class="date">{{ student.date }}</span>
+        <span class="date">{{ item.awardsDate }}</span>
       </div>
-      <div class="right">
+      <div class="right" v-for="(item, index) in PSuList.items" :key="index">
         <div class="header">
           <img class="star-img" :src="starImg" />
-          <span class="name">{{ student.name }}</span>
-          <span class="class">{{ student.klass }}</span>
+          <span class="name">{{ item.stuName }}</span>
+          <span class="class">{{ item.className }}</span>
           <img class="star-img" :src="starImg" />
         </div>
-        <div class="info">{{ student.info }}</div>
+        <div class="info"></div>
         <div class="award">
           <img class="award-bg" :src="awardBgImg" />
-          <span>{{ student.award }}</span>
+          <span>{{ item.awardsName }}</span>
         </div>
       </div>
     </div>
@@ -50,56 +50,75 @@
 
 <script>
 export default {
-  
-   data () {
+  data() {
     return {
-      titleImg: require('@/assets/honor_ranking.png'),
-      fireworkImg: require('@/assets/honor_Fireworks_colorful.png'),
-      honorBgImg: require('@/assets/honor_image_vice.png'),
-      honorFrontImg: require('@/assets/honor_image.png'),
-      awardBgImg: require('@/assets/comment_option.png'),
-      starImg: require('@/assets/honor_name.png'),
+      titleImg: require("@/assets/honor_ranking.png"),
+      fireworkImg: require("@/assets/honor_Fireworks_colorful.png"),
+      honorBgImg: require("@/assets/honor_image_vice.png"),
+      honorFrontImg: require("@/assets/honor_image.png"),
+      awardBgImg: require("@/assets/comment_option.png"),
+      starImg: require("@/assets/honor_name.png"),
       student: {
-        avatar: require('@/assets/1.jpg'),
-        date: '2021-03-10',
-        name: '张小六',
-        klass: '一年级4班',
-        info: '这位同学在【佛山市第三届红领巾文化节】交流活动优秀原创稿中荣获',
-        award: '三等奖'
+        avatar: require("@/assets/1.jpg"),
+        date: "2021-03-10",
+        name: "张小六",
+        klass: "一年级4班",
+        info: "这位同学在【佛山市第三届红领巾文化节】交流活动优秀原创稿中荣获",
+        award: "三等奖"
       },
       footer: {
-        name: '桌成实验小学',
-        qrcode: require('@/assets/1.jpg'),
-        motto: '悦评越好·让成长更可见'
+        name: "桌成实验小学",
+        qrcode: require("@/assets/1.jpg"),
+        motto: "悦评越好·让成长更可见"
       },
-      
-    }
+      id: null,
+      PSuList: []
+    };
   },
-  created () {
-    this.postOP()
+  created() {
+    this.postOP();
+    this.poosTOP();
   },
- 
-  mounted () {
-    console.log(this.arrorData)
+
+  mounted() {
+    console.log(this.arrorData);
   },
-  beforeDestroy () {
-  },
+  beforeDestroy() {},
   methods: {
-    async postOP(){
-       const rs = await this.$http.post(
+    async postOP() {
+      const rs = await this.$http.post(
         `/openschool/schoolscreennew/queryScreenThemeList?schoolCode=${"98BD49108033A204"}`
       );
-      
+
       let ar = rs.data.data;
-      let arror = ar.filter(item=>item.screenSourceType.typeId === 801)[0]
-      console.log(arror);
-      this.student.date = arror.modifyTime
-      this.student.name = arror.themeTitle.split(' ')[0]
-      this.student.klass = arror.themeTitle.split(' ')[1]
-      this.student.info = arror.remark
+
+      let arror = ar.filter(item => item.screenSourceType.typeId === 801)[0];
+
+      // this.id.push(arror.id);
+      this.id = arror.id;
+      console.log(this.id, "id===");
+
+      // console.log(arror, "//姓名");
+      // this.student.date = arror.modifyTime.substring(0, 11); //年月日时间切割
+      // this.student.name = arror.themeTitle.split(" ")[0]; //姓名
+      // this.student.klass = arror.themeTitle.split(" ")[1];
+      // this.student.info = arror.remark;
+      // console.log(this.student.info, " this.student.info");
+    },
+    async poosTOP() {
+      const rty = await this.$http.post(
+        `/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${164}`
+      );
+
+      if (rty.data.code == 0) {
+        this.PSuList = rty.data.data;
+        console.log(rty.data.data, "荣誉版内容");
+      } else {
+        return;
+      }
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -192,6 +211,7 @@ export default {
         width: 11vw;
         bottom: 4.5vw;
         text-align: center;
+        transform: translate(25%, 0);
       }
     }
     .right {
@@ -229,11 +249,12 @@ export default {
         }
         span {
           position: absolute;
-          font-size: 50px;
+          font-size: 35px;
+          font-weight: bold;
           color: rgb(236, 84, 40);
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -55%);
+          transform: translate(-50%, -65%);
         }
       }
     }
@@ -258,6 +279,10 @@ export default {
         margin-right: 20px;
       }
     }
+  }
+
+  .award-bg {
+    font-size: 24wh;
   }
 }
 </style>

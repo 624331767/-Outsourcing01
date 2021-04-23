@@ -1,5 +1,11 @@
 <template>
-  <el-carousel arrow="never" height="100vh" :interval="8000">
+  <el-carousel
+    arrow="never"
+    height="100vh"
+    :interval="1000"
+    :initial-index="1"
+    :autoplay="true"
+  >
     <el-carousel-item>
       <div class="home">
         <div class="panel">
@@ -11,7 +17,7 @@
             >
               <swiper-slide v-for="(item, index) in getYlist" :key="index">
                 <img :src="item.attachUrl" class="bg-img" />
-              </swiper-slide>             
+              </swiper-slide>
               <!-- <div slot="button-prev"></div>
               <div slot="button-next"></div> -->
               <div class="swiper-pagination" slot="pagination"></div>
@@ -39,47 +45,24 @@
                   :src="shineImg"
                 />
                 <img class="user-bg-img" :src="userBgImg" />
-                <img class="avatar" :src="student.image" />
+                <img class="avatar" :src="this.imgst" />
                 <div class="name">
                   <img class="name-bg-img" :src="nameBgImg" />
-                  <span class="spantitle">{{ student.name }}</span>
+                  <span class="spantitle">{{ this.textname }}</span>
                 </div>
               </div>
               <!-- <img class="earth-img" :src="earthImg" /> -->
               <div class="nav">
                 <div class="class">
-                  {{ klass && klass.name }}<br />
+                  {{ this.className }}<br />
                   <!-- 一年级一班 -->
-                  班主任：{{ klass && klass.headTeacher }}
                 </div>
               </div>
-              <!-- <div class="class">
-            {{ klass && klass.name }}<br /> -->
-              <!-- 一年级一班 -->
-              <!-- 班主任：{{ klass && klass.headTeacher }}
-          </div> -->
             </div>
-
-            <!-- <div class="comment">
-          <div class="content">{{ comment.content }}</div>
-          <div class="by">
-            <div class="line" />
-            <span>{{ comment.by }}</span>
-          </div>
-        </div> -->
-
-            <!-- <div class="button">
-          <img class="button-img" :src="buttonImg" />
-          <span>{{ buttonText }}</span>
-          <img
-            class="heart-img animate__animated animate__infinite animate__pulse"
-            :src="heartImg"
-          />
-        </div> -->
           </div>
         </div>
         <div class="footer">
-          <span class="name">{{ footer.name }}</span>
+          <span class="name">{{ namePs.schoolName }}</span>
           <div class="right">
             <span class="motto">{{ footer.motto }}</span>
             <img class="qrcode" :src="footer.qrcode" />
@@ -88,7 +71,7 @@
         <div class="navename">
           <div class="imgse">
             <img src="../assets/23.png" class="img" />
-            <div class="unamepass">积极参加运动会</div>
+            <div class="unamepass">{{ this.health }}</div>
           </div>
 
           <div
@@ -99,14 +82,17 @@
             <div class="content">{{ item.screenDesc }}</div>
             <div class="byr">
               <div class="line" />
-              <span>—</span> <span>{{ item.teacherName }}老师</span>
+              <span>—</span>
+              <span v-for="(item, index) in postName" :key="index"
+                >{{ item.teacherName }}老师</span
+              >
             </div>
           </div>
         </div>
       </div>
     </el-carousel-item>
 
-    <el-carousel-item >
+    <el-carousel-item>
       <arror></arror>
     </el-carousel-item>
 
@@ -114,40 +100,40 @@
       <classes></classes>
     </el-carousel-item>
 
-    <!-- <el-carousel-item>
+    <el-carousel-item>
       <posyt></posyt>
     </el-carousel-item>
 
     <el-carousel-item>
       <read></read>
-    </el-carousel-item> -->
+    </el-carousel-item>
   </el-carousel>
 </template>
 
 <script>
 import arror from "../views/arror";
 import classes from "../views/classes";
-// import posyt from "../views/posyt";
-// import read from "../views/read";
+import posyt from "../views/posyt";
+import read from "../views/read";
 
 export default {
-  components: { arror, classes },
+  components: { arror, classes, posyt, read },
   name: "Home",
   data() {
     return {
       school: {},
       screenThemeList: [],
       imageList: [],
-      arrorData:null,//第二屏的数据
+      arrorData: null, //第二屏的数据
       swiperOptions: {
         loop: true, // 循环模式选项
         autoplay: {
           // 自动切换
-          delay: 3500, // 1秒切换一次
+          delay: 10000, // 1秒切换一次
           waitForTransition: true
         },
         speed: 2000, // 切换速度
-        effect: "string"
+        effect: "coverflow"
       },
       bgImg: require("@/assets/1.jpg"),
       shineImg: require("@/assets/comment_image_launch.png"),
@@ -181,20 +167,21 @@ export default {
       getYlist: [
         {
           attachUrl:
-            "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2467149187,2677215304&fm=26&gp=0.jpg"
-        },
-        {
-          attachUrl:
-            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1785716284,4213703806&fm=26&gp=0.jpg"
+            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1785716284,4213703806&fm=26&gp=0.jpg" //测试图片
         }
       ],
       id: [],
-      ids:[],
+      ids: [],
       postName: [],
       tApname: [],
       srr: [],
       tty: {},
-      arr1: []
+      arr1: [],
+      className: [], //年级班号
+      textname: [], //名字
+      health: [], //头部
+      imgst: [], //头像
+      namePs: {} //学校内容
     };
   },
   async created() {
@@ -222,12 +209,13 @@ export default {
 
     this.postOp();
     // this.postOt();
+
+    this.GETList();
   },
   beforeDestroy() {
     clearInterval(this.timer);
   },
   methods: {
-   
     updateDanmu() {
       this.danmuList.forEach(danmu => {
         danmu.top = danmu.top - 2;
@@ -241,50 +229,63 @@ export default {
       const rs = await this.$http.post(
         `/openschool/schoolscreennew/queryScreenThemeList?schoolCode=${"98BD49108033A204"}`
       );
-      // if (rs.data.code == 0) {
-      //   this.getYlist = rs.data.data;
-      // }
 
-      // console.log(rs, "resss");
-      // console.log(this.getYlist, "333");
       let ar = rs.data.data;
       ar.forEach((item, ar) => {
         this.id.push(item.id);
       });
-      
-      
 
       // 处理第一屏
       // 存储所有id
-      ar.forEach(item=>{
-        this.ids.push(`/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${item.id}`)
-      })
+      ar.forEach(item => {
+        this.ids.push(
+          `/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${
+            item.id
+          }`
+        );
+      });
 
       // 根据id并发请求所有数据信息
-      Promise.all(this.ids.map(item=>{return this.$http.post(item)})).then(res=>{
-        
-        
-        // 选择一组有数据的放入首屏中(根据jsonData来筛选数据)
-        let res_arr = res.filter(item=>{
-          let _data = item.data.data
-          let flag = _data && Array.isArray(_data.items) && _data.items.length && _data.items[0].jsonData
-          return flag
+      Promise.all(
+        this.ids.map(item => {
+          return this.$http.post(item);
         })
+      ).then(res => {
+        // 选择一组有数据的放入首屏中(根据jsonData来筛选数据)
+        let res_arr = res.filter(item => {
+          let _data = item.data.data;
+          let flag =
+            _data &&
+            Array.isArray(_data.items) &&
+            _data.items.length &&
+            _data.items[0].jsonData;
+          return flag;
+        });
         // 左侧轮播
-        let _json =  JSON.parse(res_arr[0].data.data.items[0].jsonData)
-        
-        this.getYlist = _json.attachList
+        let _json = JSON.parse(res_arr[0].data.data.items[0].jsonData);
+
+        console.log(_json, "json");
+        this.className = _json.className;
+
+        console.log(this.className, "this.className3333");
+        this.getYlist = _json.attachList; //年级班数
+        this.textname = _json.stuName; //学生名字
+        this.health = _json.itemName; //身体素质
+        this.imgst = _json.headTeacherPic; //头像
         // 右侧师生信息
-        this.postName = res_arr[0].data.data.items
-        this.srr = res_arr[0].data.data.items
-      })
+        this.postName = res_arr[0].data.data.items;
 
+        console.log(this.postName, "this.postName右侧师生信息");
 
+        this.srr = res_arr[0].data.data.items;
+        console.log(this.srr, "this.srr右侧师生信息");
+
+        console.log(this.srr, "this.srr");
+        console.log(this.postName, "this.postName");
+      });
 
       console.log("大屏数据", ar);
-      console.log('ids:',this.id)
-      // console.log(this.id, "ar");
-      // console.log(this.id[1], "222");
+      console.log("ids:", this.id);
     },
 
     async postOt() {
@@ -292,19 +293,27 @@ export default {
         `/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${160}`
       );
       if (tp.data.code == 0) {
-        // console.log("222");
-
         this.postName = tp.data.data.items;
+
         this.srr = tp.data.data.items;
+        this.jpg = tp.data.data;
+        console.log(jpg, "jpg");
 
         this.srr.forEach((item, srr) => {
           this.tty = item.jsonData;
-
-          // console.log(this.tty, "00000");
         });
-
-        // console.log(this.tty.length);
       }
+    },
+    // 获取学校主页
+    async GETList() {
+      const hopupass = await this.$http.get(
+        `/openschool/schoolscreennew/getSchoolInfo?schoolCode=${"98BD49108033A204"}`
+      );
+      if (hopupass.data.code == 0) {
+        this.namePs = hopupass.data.data;
+      }
+
+      console.log(this.namePs, "学校主屏的内容");
     }
   }
 };
@@ -437,7 +446,7 @@ export default {
         .class {
           position: absolute;
           right: 15%;
-          bottom: 20%;
+          bottom: 35%;
           color: white;
           font-weight: 600;
         }
@@ -517,6 +526,7 @@ export default {
     height: 30%;
     top: 20%;
     right: 44%;
+
     font-size: 0.33333rem;
     background-color: red;
     border: solid #f4b52a 0.06667rem;
@@ -553,7 +563,7 @@ export default {
 
     .unamepass {
       position: absolute;
-      top: 20%;
+      top: 25%;
       color: #8a6c0d;
       left: 30%;
       font-size: 30px;

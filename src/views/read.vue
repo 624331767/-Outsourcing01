@@ -1,7 +1,59 @@
+// 年级对比 周
 <template>
   <div class="classes">
     <div class="panel">
-    
+      <img class="title-img" :src="titleImg" />
+      <img
+        class="space-ship animate__animated animate__infinite animate__shakeY"
+        :src="spaceShipImg"
+      />
+
+      <div class="bottom">
+        <div class="folder">
+          <img class="folder-img" :src="folderImg" />
+          <span>{{ title }}</span>
+        </div>
+        <div class="rank no1">
+          <img class="mark-img" :src="mark1Img" />
+          <img class="rank-img" :src="no1Img" />
+          <div class="mark">{{ no1.mark }}分</div>
+          <div class="class">{{ no1.class }}</div>
+          <div class="head-teacher">班主任：{{ no1.headTeacher }}</div>
+        </div>
+        <div class="rank no2">
+          <img class="mark-img" :src="mark2Img" />
+          <img class="rank-img" :src="no2Img" />
+          <div class="mark">{{ no2.mark }}分</div>
+          <div class="class">{{ no2.class }}</div>
+          <div class="head-teacher">班主任：{{ no2.headTeacher }}</div>
+        </div>
+        <div class="rank no3">
+          <img class="mark-img" :src="mark3Img" />
+          <img class="rank-img" :src="no3Img" />
+          <div class="mark">{{ no3.mark }}分</div>
+          <div class="class">{{ no3.class }}</div>
+          <div class="head-teacher">班主任：{{ no3.headTeacher }}</div>
+        </div>
+
+        <div class="rankings">
+          <el-carousel height="50vh">
+            <el-carousel-item
+              v-for="i in Math.ceil(rankings.length / 6)"
+              :key="i"
+            >
+              <div
+                v-for="(ranking, index) in rankings.slice((i - 1) * 6, i * 6)"
+                :key="index"
+                class="ranking"
+              >
+                <span>第{{ ranking.no }}名.</span>
+                <span>{{ ranking.class }}</span>
+                <span>{{ ranking.mark }}分</span>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+      </div>
     </div>
 
     <div class="footer">
@@ -16,65 +68,91 @@
 
 <script>
 export default {
-  name: 'Home',
-  data () {
+  data() {
     return {
-      titleImg: require('@/assets/record-title.png'),
-      spaceShipImg: require('@/assets/culture_vicepic.png'),
-      folderImg: require('@/assets/culture_month.png'),
-      no1Img: require('@/assets/culture_rank_first.png'),
-      no2Img: require('@/assets/culture_rank_second.png'),
-      no3Img: require('@/assets/culture_rank_third.png'),
-      mark1Img: require('@/assets/culture_grade_first.png'),
-      mark2Img: require('@/assets/culture_grade_second.png'),
-      mark3Img: require('@/assets/culture_grade_third.png'),
-      title: '一年级 第七周',
+      titleImg: require("@/assets/culture_title.png"),
+      spaceShipImg: require("@/assets/culture_vicepic.png"),
+      folderImg: require("@/assets/culture_month.png"),
+      no1Img: require("@/assets/culture_rank_first.png"),
+      no2Img: require("@/assets/culture_rank_second.png"),
+      no3Img: require("@/assets/culture_rank_third.png"),
+      mark1Img: require("@/assets/culture_grade_first.png"),
+      mark2Img: require("@/assets/culture_grade_second.png"),
+      mark3Img: require("@/assets/culture_grade_third.png"),
+      title: "三年级 第七周",
       no1: {
         mark: 101,
-        class: '101班',
-        headTeacher: '陈大文'
+        class: "101班",
+        headTeacher: "陈大文"
       },
       no2: {
         mark: 106,
-        class: '102班',
-        headTeacher: '陈大文'
+        class: "102班",
+        headTeacher: "陈大文"
       },
       no3: {
         mark: 105,
-        class: '103班',
-        headTeacher: '陈大文'
+        class: "103班",
+        headTeacher: "陈大文"
       },
       rankings: [
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '104班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 },
-        { no: 4, class: '105班', mark: 96 }
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "104班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 },
+        { no: 4, class: "105班", mark: 96 }
       ],
       footer: {
-        name: '桌成实验小学',
-        qrcode: require('@/assets/1.jpg'),
-        motto: '悦评越好·让成长更可见'
+        name: "桌成实验小学",
+        qrcode: require("@/assets/1.jpg"),
+        motto: "悦评越好·让成长更可见"
+      },
+      id: [],
+      ids: [],
+      cheList: []
+    };
+  },
+  created() {
+    this.postOP();
+    this.poosTOP();
+  },
+  mounted() {},
+  beforeDestroy() {},
+  methods: {
+    async postOP() {
+      const rs = await this.$http.post(
+        `/openschool/schoolscreennew/queryScreenThemeList?schoolCode=${"98BD49108033A204"}`
+      );
+
+      let ar = rs.data.data;
+
+      console.log(ar, "araaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+      let arror = ar.filter(item => item.screenSourceType.typeId === 211)[0];
+
+      this.id = arror.id;
+      console.log(this.id, "id===");
+    },
+    async poosTOP() {
+      const rty = await this.$http.post(
+        `/openschool/schoolscreennew/themeLoopDetail?schoolCode=${"98BD49108033A204"}&themeId=${165}`
+      );
+      console.log(rty, "rttttttttt");
+      if (rty.data.code == 0) {
+        this.cheList = rty.data.data;
+        // console.log(rty.data.data, "班级评比内容");
+      } else {
+        return;
       }
     }
-  },
-  created () {
-
-  },
-  mounted () {
-  },
-  beforeDestroy () {
-  },
-  methods: {
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
